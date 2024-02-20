@@ -1,19 +1,24 @@
 import { NextResponse } from "next/server";
 
-import { getLowestPrice, getHighestPrice, getAveragePrice, getEmailNotifType } from "@/lib/utils";
+import {
+  getLowestPrice,
+  getHighestPrice,
+  getAveragePrice,
+  getEmailNotifType,
+} from "@/lib/utils";
 import { connectToDB } from "@/lib/mongoose";
-import Product from "@/lib/models/product.model";
+import Product from "@/lib/actions/models/product.model";
 import { scrapeAmazonProduct } from "@/lib/scraper";
 import { generateEmailBody, sendEmail } from "@/lib/nodeMailer";
 
-export const maxDuration = 5; // This function can run for a maximum of 300 seconds
+export const maxDuration = 8; // This function can run for a maximum of 300 seconds
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export async function GET(req: Request) {
   try {
     connectToDB();
- 
+
     const products = await Product.find({});
 
     if (!products) throw new Error("No product fetched");
@@ -61,9 +66,14 @@ export async function GET(req: Request) {
             url: updatedProduct.url,
           };
           // Construct emailContent
-          const emailContent = await generateEmailBody(productInfo, emailNotifType);
+          const emailContent = await generateEmailBody(
+            productInfo,
+            emailNotifType
+          );
           // Get array of user emails
-          const userEmails = updatedProduct.users.map((user: any) => user.email);
+          const userEmails = updatedProduct.users.map(
+            (user: any) => user.email
+          );
           // Send email notification
           await sendEmail(emailContent, userEmails);
         }
