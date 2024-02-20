@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 
 import { getLowestPrice, getHighestPrice, getAveragePrice, getEmailNotifType } from "@/lib/utils";
 import { connectToDB } from "@/lib/mongoose";
-import Product from "@/lib/models/product.model";
 import { scrapeAmazonProduct } from "@/lib/scraper";
-import { generateEmailBody, sendEmail } from "@/lib/nodemailer";
+import Product from "@/lib/actions/models/product.model";
+import { generateEmailBody, sendEmail } from "@/lib/nodeMailer";
 
 export const maxDuration = 9; // This function can run for a maximum of 300 seconds
 export const dynamic = "force-dynamic";
